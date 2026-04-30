@@ -53,7 +53,7 @@ export const RunNewPage: FC<RunNewPageProps> = ({ values = {}, errors = {} }) =>
                 name="repo"
                 required
                 pattern="[\w.-]+/[\w.-]+"
-                placeholder="WinTicket/server"
+                placeholder="CyberAgentSRG/server"
                 value={values.repo ?? ""}
                 class={`block w-full rounded-md shadow-sm sm:text-sm px-3 py-2 border focus:ring-2 focus:ring-offset-0 outline-none transition-colors ${
                   errors.repo

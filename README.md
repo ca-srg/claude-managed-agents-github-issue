@@ -1,7 +1,7 @@
 # github-issue-agent
 
 GitHub issue を自動的に分解し、実装 PR を作成する HTTP サーバー型エージェント。
-WebUI から `--issue 21925 --repo WinTicket/server` 相当を実行できる。
+WebUI から `--issue 21925 --repo CyberAgentSRG/server` 相当を実行できる。
 
 ## 概要
 
@@ -28,42 +28,48 @@ bun run start
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|---|---|---|
-| `PORT` | `3000` | listen port |
-| `HOST` | `127.0.0.1` | bind host (set to `0.0.0.0` to expose) |
-| `DB_PATH` | `.github-issue-agent/dashboard.db` | SQLite db |
-| `CONFIG_PATH` | (none) | optional config TS path |
-| `ANTHROPIC_API_KEY` | (required) | Anthropic API key |
-| `GITHUB_TOKEN` | (required) | GitHub PAT (`repo` for classic; `contents:read`, `issues:write`, `pull_requests:write` for fine-grained) |
-| `LOG_LEVEL` | `info` | log level |
-| `LOG_FILE` | stderr | log file path |
+| Variable            | Default                            | Description                                                                                              |
+| ------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `PORT`              | `3000`                             | listen port                                                                                              |
+| `HOST`              | `127.0.0.1`                        | bind host (set to `0.0.0.0` to expose)                                                                   |
+| `DB_PATH`           | `.github-issue-agent/dashboard.db` | SQLite db                                                                                                |
+| `CONFIG_PATH`       | (none)                             | optional config TS path                                                                                  |
+| `ANTHROPIC_API_KEY` | (required)                         | Anthropic API key                                                                                        |
+| `GITHUB_TOKEN`      | (required)                         | GitHub PAT (`repo` for classic; `contents:read`, `issues:write`, `pull_requests:write` for fine-grained) |
+| `LOG_LEVEL`         | `info`                             | log level                                                                                                |
+| `LOG_FILE`          | stderr                             | log file path                                                                                            |
 
 ## HTTP API
 
 ### POST /api/runs
+
 ```json
 { "issue": 42, "repo": "owner/name", "dryRun": false }
 ```
+
 returns `{ "runId": "uuid" }`
 
 ### GET /api/runs
+
 returns `{ "runs": [...], "total": N }`
 
 ### GET /api/runs/:runId
+
 returns full run detail
 
 ### POST /api/runs/:runId/stop
+
 returns `{ "outcome": "stopped" | "..." }`
 
 ### GET /api/runs/:runId/events
+
 Server-Sent Events stream. Supports `Last-Event-ID` for resume.
 Event kinds: `phase`, `session`, `subIssue`, `log`, `complete`, `error`.
 
 ## WebUI flow
 
 1. ブラウザで `http://127.0.0.1:3000/runs/new` を開く
-2. `Issue Number` (例: `21925`)、`Repo` (例: `WinTicket/server`) を入力
+2. `Issue Number` (例: `21925`)、`Repo` (例: `CyberAgentSRG/server`) を入力
 3. (Optional) `Dry-run` にチェック → decomposition プランのみ計算
 4. Submit → `/runs/:runId/live` に遷移、SSE でリアルタイム進捗を表示
 
@@ -104,15 +110,15 @@ issue の分解からサブタスクの実装完了までの総コストは、is
 
 ## Deployment
 
-Fly.io + Cloudflare Tunnel + Cloudflare Access (OIDC) のセットアップ手順は
-`docs/deploy-fly.md` を参照。リポジトリには `Dockerfile` / `fly.toml` /
-`scripts/start.sh` を同梱しているので、`fly launch --copy-config` ですぐ動く。
+Fly.io へのデプロイ手順は `docs/deploy-fly.md` を参照。リポジトリには
+`Dockerfile` / `fly.toml` / `scripts/start.sh` を同梱しています。
 
 ## E2E Tests
 
 ```bash
 E2E=1 TEST_REPO=<owner>/<repo> TEST_ISSUE=<n> bun run scripts/e2e-real.ts
 ```
+
 詳細は `docs/e2e-setup.md` を参照。
 
 ## Troubleshooting

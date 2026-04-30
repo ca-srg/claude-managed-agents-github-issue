@@ -22,7 +22,7 @@ describe("RunStartInputSchema", () => {
     const parseOutcome = RunStartInputSchema.safeParse({
       dryRun: false,
       issue: 21925,
-      repo: "WinTicket/server",
+      repo: "CyberAgentSRG/server",
     });
 
     expect(parseOutcome.success).toBe(true);
@@ -34,7 +34,7 @@ describe("RunStartInputSchema", () => {
     expect(parseOutcome.data).toEqual({
       dryRun: false,
       issue: 21925,
-      repo: "WinTicket/server",
+      repo: "CyberAgentSRG/server",
     });
   });
 
@@ -151,7 +151,7 @@ describe("run-api output schemas", () => {
   test("accepts run summary and detail response payloads", () => {
     const runSummary = {
       issueNumber: 21925,
-      repo: "WinTicket/server",
+      repo: "CyberAgentSRG/server",
       runId: "run-1",
       startedAt: "2026-04-28T12:00:00Z",
       status: "running",

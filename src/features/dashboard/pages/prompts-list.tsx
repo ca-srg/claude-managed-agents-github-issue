@@ -17,60 +17,58 @@ export type PromptsListPageProps = {
 export const PromptsListPage: FC<PromptsListPageProps> = (props) => {
   return (
     <Layout title="Prompts" activeNav="prompts">
-      <section class="prompts-page space-y-6">
-        <header class="page-header">
-          <h1 class="page-title text-3xl font-bold tracking-tight text-neutral-900">Prompts</h1>
-          <p class="page-subtitle text-neutral-500">
-            system prompts: editable / runtime templates: read-only
-          </p>
+      <section class="space-y-6">
+        <header class="space-y-2">
+          <h1 class="text-3xl font-bold tracking-tight text-neutral-900">Prompts</h1>
+          <p class="text-neutral-500">system prompts: editable / runtime templates: read-only</p>
         </header>
         {props.prompts.length === 0 ? (
-          <div class="empty-state text-center py-16 px-4 border-2 border-dashed border-neutral-200 rounded-xl bg-surface">
-            <div class="empty-state-icon text-4xl mb-4">⎋</div>
-            <div class="empty-state-title text-lg font-medium text-neutral-900 mb-2">
-              No prompts seeded yet
+          <div class="text-center py-16 px-4 border-2 border-dashed border-neutral-200 rounded-xl bg-surface">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-100 text-neutral-400 mb-4">
+              <span class="text-2xl leading-none">⎋</span>
             </div>
-            <div class="empty-state-hint text-neutral-500">
-              No prompts seeded yet. Restart the CLI or run "serve" to seed defaults.
-            </div>
+            <h3 class="text-lg font-medium text-neutral-900 mb-1">No prompts seeded yet</h3>
+            <p class="text-neutral-500">Restart the CLI or run "serve" to seed defaults.</p>
           </div>
         ) : (
-          <div class="prompt-list-table">
-            <Table columns={["key", "editable", "revisions", "updated", "details"]}>
-              {props.prompts.map((entry) => (
-                <tr key={entry.promptKey}>
-                  <td class="prompt-key-cell">
-                    <a
-                      href={`/prompts/${entry.promptKey}`}
-                      data-prompt-key={entry.promptKey}
-                      class="font-mono text-brand-600 hover:underline"
-                    >
-                      {entry.promptKey}
-                    </a>
-                  </td>
-                  <td>
-                    <span
-                      class={`prompt-badge ${entry.editable ? "editable bg-success-50 text-success-700 border-success-200" : "readonly bg-neutral-50 text-neutral-600 border-neutral-200"} inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium font-mono uppercase tracking-wide border`}
-                    >
-                      {entry.editable ? "editable" : "read-only"}
-                    </span>
-                  </td>
-                  <td class="mono font-mono">{entry.revisionCount}</td>
-                  <td class="mono muted font-mono text-neutral-500">
-                    {formatRelativeTime(entry.updatedAt)}
-                  </td>
-                  <td>
-                    <a
-                      href={`/prompts/${entry.promptKey}`}
-                      class="mono font-mono text-brand-600 hover:underline"
-                    >
-                      view →
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </Table>
-          </div>
+          <Table columns={["key", "editable", "revisions", "updated", "details"]}>
+            {props.prompts.map((entry) => (
+              <tr key={entry.promptKey} class="hover:bg-neutral-50 transition-colors">
+                <td class="px-4 py-3">
+                  <a
+                    href={`/prompts/${entry.promptKey}`}
+                    data-prompt-key={entry.promptKey}
+                    class="font-mono text-brand-600 hover:text-brand-700 font-medium"
+                  >
+                    {entry.promptKey}
+                  </a>
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium font-mono uppercase tracking-wide border ${
+                      entry.editable
+                        ? "bg-success-50 text-success-700 border-success-200"
+                        : "bg-neutral-50 text-neutral-600 border-neutral-200"
+                    }`}
+                  >
+                    {entry.editable ? "editable" : "read-only"}
+                  </span>
+                </td>
+                <td class="px-4 py-3 font-mono text-neutral-900">{entry.revisionCount}</td>
+                <td class="px-4 py-3 font-mono text-neutral-500 text-sm">
+                  {formatRelativeTime(entry.updatedAt)}
+                </td>
+                <td class="px-4 py-3">
+                  <a
+                    href={`/prompts/${entry.promptKey}`}
+                    class="font-mono text-brand-600 hover:text-brand-700 text-sm"
+                  >
+                    view →
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </Table>
         )}
       </section>
     </Layout>

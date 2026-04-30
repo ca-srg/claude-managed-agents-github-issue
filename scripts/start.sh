@@ -12,16 +12,6 @@ if [ ! -L /app/.github-issue-agent ] \
   ln -sfn /data/agent-state /app/.github-issue-agent
 fi
 
-TUNNEL_PID=""
-
-if [ -n "${CLOUDFLARE_TUNNEL_TOKEN:-}" ]; then
-  cloudflared tunnel --no-autoupdate run --token "$CLOUDFLARE_TUNNEL_TOKEN" &
-  TUNNEL_PID=$!
-  echo "[start.sh] cloudflared started (pid=$TUNNEL_PID)" >&2
-else
-  echo "[start.sh] CLOUDFLARE_TUNNEL_TOKEN not set; skipping cloudflared" >&2
-fi
-
 bun /app/index.ts &
 APP_PID=$!
 echo "[start.sh] bun server started (pid=$APP_PID)" >&2
@@ -29,22 +19,13 @@ echo "[start.sh] bun server started (pid=$APP_PID)" >&2
 shutdown() {
   echo "[start.sh] received signal, shutting down" >&2
   kill -TERM "$APP_PID" 2>/dev/null || true
-  if [ -n "$TUNNEL_PID" ]; then
-    kill -TERM "$TUNNEL_PID" 2>/dev/null || true
-  fi
   wait
 }
 
 trap shutdown TERM INT
 
-# Whichever child exits first triggers the teardown so Fly will recreate the
-# machine cleanly. Exit code from the child propagates to the supervisor.
 set +e
-if [ -n "$TUNNEL_PID" ]; then
-  wait -n "$APP_PID" "$TUNNEL_PID"
-else
-  wait "$APP_PID"
-fi
+wait "$APP_PID"
 EXIT_CODE=$?
 set -e
 
