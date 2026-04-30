@@ -1,17 +1,17 @@
 # github-issue-agent
 
-**English** | [日本語](README_ja.md)
+[English](README.md) | **日本語**
 
-An HTTP server agent that automatically decomposes GitHub issues and ships implementation PRs.
-The WebUI lets you trigger the equivalent of `--issue 21925 --repo CyberAgentSRG/server` from your browser.
+GitHub issue を自動的に分解し、実装 PR を作成する HTTP サーバー型エージェント。
+WebUI から `--issue 21925 --repo CyberAgentSRG/server` 相当を実行できる。
 
-![github-issue-agent — Decompose GitHub issues. Ship pull requests. Autonomously.](docs/ogp.jpeg)
+![github-issue-agent — GitHub issue を分解し、PR を自動生成。](docs/ogp.jpeg)
 
-## Overview
+## 概要
 
-`github-issue-agent` accepts a GitHub issue as a parent task, automatically breaks it down into multiple child issues (sub-tasks), implements each of them, and finally consolidates the work into a single pull request.
+`github-issue-agent` は、GitHub issue を親タスクとして受け取り、それを複数の子 issue（サブタスク）に自動分解し、最終的に 1 つのプルリクエストにまとめて実装を完了させるためのツールです。
 
-It is built on top of the Anthropic Managed Agents API (`@anthropic-ai/sdk`); the agents operate on your GitHub repository directly to drive each task to completion.
+Anthropic Managed Agents API (`@anthropic-ai/sdk`) を利用しており、エージェントが GitHub リポジトリを直接操作してタスクを遂行します。
 
 ## Quick Start
 
@@ -23,7 +23,7 @@ bun run start
 # → Listening on http://127.0.0.1:3000
 ```
 
-Open http://127.0.0.1:3000 in your browser.
+ブラウザで http://127.0.0.1:3000 を開く。
 
 ## Screenshots
 
@@ -72,20 +72,20 @@ Event kinds: `phase`, `session`, `subIssue`, `log`, `complete`, `error`.
 
 ## WebUI flow
 
-1. Open `http://127.0.0.1:3000/runs/new` in your browser
-2. Enter `Issue Number` (e.g. `21925`) and `Repo` (e.g. `CyberAgentSRG/server`)
-3. (Optional) Check `Dry-run` to compute the decomposition plan only
-4. Submit → you are redirected to `/runs/:runId/live`, which shows real-time progress over SSE
+1. ブラウザで `http://127.0.0.1:3000/runs/new` を開く
+2. `Issue Number` (例: `21925`)、`Repo` (例: `CyberAgentSRG/server`) を入力
+3. (Optional) `Dry-run` にチェック → decomposition プランのみ計算
+4. Submit → `/runs/:runId/live` に遷移、SSE でリアルタイム進捗を表示
 
 ## Prompt Management
 
-You can **view and edit the agents' system prompts** from the WebUI. Edited values are persisted to SQLite (`.github-issue-agent/dashboard.db`) and automatically loaded into the Anthropic-side agent definition on the next run.
+WebUI から、エージェントの **system prompt を閲覧・編集** できます。編集された値は SQLite (`.github-issue-agent/dashboard.db`) に永続化され、次回実行時に DB から読み込まれて Anthropic 側の agent 定義に自動反映されます。
 
-Open the **Prompts** tab in the header to navigate to the prompt list (`/prompts`) and edit them.
+ヘッダーの **Prompts** ナビからプロンプト一覧へ遷移 (`/prompts`) して編集可能です。
 
-## Configuration
+## 設定
 
-Customize behavior by creating a `github-issue-agent.config.ts` file.
+設定ファイル `github-issue-agent.config.ts` を作成することで、動作をカスタマイズできます。
 
 ```ts
 import type { Config } from "./src/shared/config";
@@ -106,15 +106,16 @@ const config: Config = {
 export default config;
 ```
 
-## Cost
+## コスト
 
-As a rough guideline, expect roughly `0.08 USD` per session-hour (based on `claude-opus-4-7` session pricing as of 2026-04).
+目安として、セッション 1 時間あたり約 `0.08 USD` のコストが発生します（2026-04 時点の `claude-opus-4-7` の session 課金に基づく）。
 
-The total cost from issue decomposition to sub-task completion depends on the size of the issue and the number of child tasks generated. Anthropic's pricing changes over time, so check the official docs for the latest rates.
+issue の分解からサブタスクの実装完了までの総コストは、issue の規模や生成される子タスクの数に依存します。Anthropic 側のモデル料金は変動するため、最新の価格は公式ドキュメントで確認してください。
 
 ## Deployment
 
-See `docs/deploy-fly.md` for Fly.io deployment steps. The repository ships with `Dockerfile`, `fly.toml`, and `scripts/start.sh`.
+Fly.io へのデプロイ手順は `docs/deploy-fly.md` を参照。リポジトリには
+`Dockerfile` / `fly.toml` / `scripts/start.sh` を同梱しています。
 
 ## E2E Tests
 
@@ -122,10 +123,10 @@ See `docs/deploy-fly.md` for Fly.io deployment steps. The repository ships with 
 E2E=1 TEST_REPO=<owner>/<repo> TEST_ISSUE=<n> bun run scripts/e2e-real.ts
 ```
 
-See `docs/e2e-setup.md` for details.
+詳細は `docs/e2e-setup.md` を参照。
 
 ## Troubleshooting
 
-- **Stale lockfile**: `rm .github-issue-agent/run.lock.lock`
-- **No history in the WebUI**: you need to run an issue at least once to populate the DB
-- **Port conflict**: `PORT=3097 bun run start`
+- **ロックファイルが残った場合**: `rm .github-issue-agent/run.lock.lock`
+- **WebUI に履歴が出ない**: 1 度 issue を実行して DB に書き込む必要があります
+- **ポート競合**: `PORT=3097 bun run start`
